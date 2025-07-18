@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>공유마블 돈 계산기</title>
+  <style>
+    body {
+      background: #111;
+      color: #fff;
+      font-family: 'Noto Sans KR', Arial, sans-serif;
+      padding: 40px;
+      min-height: 100vh;
+    }
+    .teams {
+      display: flex;
+      gap: 30px;
+      justify-content: center;
+    }
+    .team-card {
+      background: #18191a;
+      border-radius: 24px;
+      box-shadow: 0 2px 16px #0008;
+      padding: 38px 40px 38px 40px;
+      min-width: 260px;
+      min-height: 340px;
+      text-align: center;
+      margin-bottom: 32px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+    .team-title {
+      font-size: 2rem;
+      margin-bottom: 10px;
+      font-weight: bold;
+      letter-spacing: 2px;
+    }
+    .money {
+      font-size: 2.5rem;
+      margin-bottom: 18px;
+      font-family: 'Consolas', monospace;
+    }
+    .input-row {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      align-items: center;
+    }
+    .input-row input {
+      padding: 8px 16px;
+      font-size: 1.1rem;
+      background: #191919;
+      color: #fff;
+      border: 1px solid #555;
+      border-radius: 8px;
+      outline: none;
+      width: 180px;
+      text-align: center;
+      transition: border 0.2s;
+    }
+    .input-row input:focus {
+      border: 1.5px solid #52ffa8;
+    }
+    .history {
+      margin-top: 15px;
+      font-size: 0.95rem;
+      color: #aaa;
+      height: 180px;   /* 더 길게! */
+      overflow-y: auto;
+      border-top: 1px solid #333;
+      padding-top: 7px;
+    }
+  </style>
+</head>
+<body>
+  <h1 style="text-align:center;margin-bottom:40px;">공유마블 돈 계산기</h1>
+  <div class="teams">
+    <div class="team-card" id="team1">
+      <div class="team-title">1팀</div>
+      <div class="money" id="money1">200</div>
+      <div class="input-row">
+        <input type="text" placeholder="+100 / -100 [만원]" id="input1">
+      </div>
+      <div class="history" id="history1"></div>
+    </div>
+    <div class="team-card" id="team2">
+      <div class="team-title">2팀</div>
+      <div class="money" id="money2">200</div>
+      <div class="input-row">
+        <input type="text" placeholder="+100 / -100 [만원]" id="input2">
+      </div>
+      <div class="history" id="history2"></div>
+    </div>
+    <div class="team-card" id="team3">
+      <div class="team-title">3팀</div>
+      <div class="money" id="money3">200</div>
+      <div class="input-row">
+        <input type="text" placeholder="+100 / -100 [만원]" id="input3">
+      </div>
+      <div class="history" id="history3"></div>
+    </div>
+  </div>
+  <script>
+    const teamData = [
+      { money: 200, inputId: "input1", moneyId: "money1", historyId: "history1", history: [] },
+      { money: 200, inputId: "input2", moneyId: "money2", historyId: "history2", history: [] },
+      { money: 200, inputId: "input3", moneyId: "money3", historyId: "history3", history: [] }
+    ];
+
+    function updateUI(teamIdx) {
+      const d = teamData[teamIdx];
+      document.getElementById(d.moneyId).textContent = d.money.toLocaleString() + "만";
+      document.getElementById(d.historyId).innerHTML = d.history.slice(-5).map(e => `<div>${e}</div>`).join('');
+    }
+
+    teamData.forEach((team, idx) => {
+      const input = document.getElementById(team.inputId);
+      input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          let val = input.value.trim();
+          if (!/^(\+|-)\d+$/.test(val)) {
+            input.value = "";
+            input.placeholder = "잘못된 입력!";
+            setTimeout(()=>input.placeholder="+100 / -100 [만원]",1000);
+            return;
+          }
+          let num = parseInt(val);
+          team.money += num;
+          team.history.push(`${num > 0 ? "➕" : "➖"} ${Math.abs(num).toLocaleString()}만 (잔액: ${team.money.toLocaleString()}만)`);
+          updateUI(idx);
+          input.value = "";
+        }
+      });
+      updateUI(idx);
+    });
+  </script>
+</body>
+</html>
